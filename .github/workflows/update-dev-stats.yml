@@ -50,11 +50,12 @@ jobs:
       - name: Render charts
         run: python stats/render_charts.py --data-dir data --out-dir profile/assets/stats
 
-      # main is PR-protected (0 approvals required). Push to a bot branch,
-      # open/update a PR, and squash-merge it — never push to main directly.
+      # main is PR-protected (0 approvals required). Org policy blocks GITHUB_TOKEN
+      # from creating PRs, so push with GITHUB_TOKEN and open/merge with ORG_STATS_TOKEN.
       - name: Open PR and merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ORG_STATS_TOKEN: ${{ secrets.ORG_STATS_TOKEN }}
         run: |
           set -euo pipefail
           BRANCH="chore/dev-stats"
@@ -69,6 +70,7 @@ jobs:
           git add data profile/assets/stats
           if git diff --cached --quiet; then
             echo "No changes to commit"
+            export GH_TOKEN="$ORG_STATS_TOKEN"
             if gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
               gh pr merge "$BRANCH" --squash --delete-branch || true
             fi
@@ -77,6 +79,9 @@ jobs:
 
           git commit -m "chore: update dev stats (${DATE})"
           git push -u origin "$BRANCH" --force-with-lease
+
+          # Org disables workflow write; GITHUB_TOKEN cannot create PRs.
+          export GH_TOKEN="$ORG_STATS_TOKEN"
 
           if gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
             echo "Updating existing PR for ${BRANCH}"

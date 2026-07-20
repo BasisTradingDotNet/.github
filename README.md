@@ -34,20 +34,24 @@ workflow.
 
 ### Required secret: `ORG_STATS_TOKEN`
 
-The workflow clones every (private) org repo, so it needs a fine-grained
-org PAT stored as an Actions secret on this repo:
+The workflow clones every (private) org repo **and** opens/merges the daily
+stats PR (org policy blocks `GITHUB_TOKEN` from creating PRs), so it needs a
+fine-grained org PAT stored as an Actions secret on this repo:
 
 1. GitHub → Settings → Developer settings → Fine-grained tokens → *Generate
-   new token*.
+   new token* (or edit the existing one).
 2. **Resource owner:** `BasisTradingDotNet` · **Repository access:** All
    repositories.
-3. **Repository permissions:** Contents *Read-only*, Metadata *Read-only*,
-   Pull requests *Read-only*. No other permissions.
+3. **Repository permissions:**
+   - Contents: **Read and write** (needed to merge the stats PR into this repo)
+   - Metadata: *Read-only*
+   - Pull requests: **Read and write** (create + squash-merge `chore/dev-stats`)
 4. Set a long expiry (or calendar a rotation) and generate.
-5. In this repo: Settings → Secrets and variables → Actions → *New repository
-   secret* → name `ORG_STATS_TOKEN`, paste the token.
+5. In this repo: Settings → Secrets and variables → Actions →
+   `ORG_STATS_TOKEN` → update the value.
 
-The push back to this repo uses the default `GITHUB_TOKEN`, not the PAT.
+Branch push of `chore/dev-stats` still uses the default `GITHUB_TOKEN`; only
+PR create/merge uses the PAT.
 
 ### Run locally
 
