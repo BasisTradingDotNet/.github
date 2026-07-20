@@ -31,4 +31,59 @@ monitoring, and transparent, per-account NAV reporting.
 
 ---
 
+## Engineering
+
+Aggregate development activity across all BTNET repositories since the
+organization was created (May 2026). Sampled daily on default branches;
+vendored third-party code is excluded. Updated automatically every day.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/stats/summary_dark.svg" />
+    <img src="assets/stats/summary_light.svg" alt="Headline engineering stats" width="100%" />
+  </picture>
+</p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/loc_dark.svg" />
+  <img src="assets/stats/loc_light.svg" alt="Lines of code over time" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/churn_dark.svg" />
+  <img src="assets/stats/churn_light.svg" alt="Line additions and deletions per day" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/focus_dark.svg" />
+  <img src="assets/stats/focus_light.svg" alt="Focus per day: backend vs frontend vs infra and docs" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/languages_dark.svg" />
+  <img src="assets/stats/languages_light.svg" alt="Lines of code per language" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/treemap_dark.svg" />
+  <img src="assets/stats/treemap_light.svg" alt="Lines of code by repository (anonymized)" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/repos_dark.svg" />
+  <img src="assets/stats/repos_light.svg" alt="Number of repositories over time" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/prs_dark.svg" />
+  <img src="assets/stats/prs_light.svg" alt="Pull requests merged per week" width="100%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/stats/punchcard_dark.svg" />
+  <img src="assets/stats/punchcard_light.svg" alt="Commit punch card by UTC hour and weekday" width="100%" />
+</picture>
+
+---
+
 <sub>Target returns are objectives, not guarantees. Trading digital assets involves substantial risk. This profile is informational and is not an offer or solicitation to invest.</sub>

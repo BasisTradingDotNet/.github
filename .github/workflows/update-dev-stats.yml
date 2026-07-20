@@ -1,0 +1,62 @@
+name: Update dev stats
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # daily, after the previous UTC day completes
+  workflow_dispatch:
+
+concurrency:
+  group: dev-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout .github repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r stats/requirements.txt
+
+      - name: Clone all org repos
+        env:
+          # Fine-grained org PAT with contents:read + pull-requests:read
+          # + metadata:read on all BasisTradingDotNet repos.
+          GH_TOKEN: ${{ secrets.ORG_STATS_TOKEN }}
+        run: |
+          mkdir -p /tmp/org-repos
+          gh repo list BasisTradingDotNet --limit 200 --json name --jq '.[].name' |
+          while read -r name; do
+            git clone --quiet \
+              "https://x-access-token:${GH_TOKEN}@github.com/BasisTradingDotNet/${name}.git" \
+              "/tmp/org-repos/${name}"
+          done
+
+      - name: Collect stats
+        env:
+          GH_TOKEN: ${{ secrets.ORG_STATS_TOKEN }}
+        run: python stats/collect_stats.py --repos-dir /tmp/org-repos --out-dir data
+
+      - name: Render charts
+        run: python stats/render_charts.py --data-dir data --out-dir profile/assets/stats
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data profile/assets/stats
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update dev stats ($(date -u +%F))"
+            git push
+          fi
