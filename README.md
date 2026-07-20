@@ -16,7 +16,9 @@ workflow.
   and picked via `<picture>` / `prefers-color-scheme`.
 - Every run recomputes the full history from fresh clones (fast — the whole
   backfill takes well under a minute), so the pipeline is idempotent and has
-  no append-state to corrupt.
+  no append-state to corrupt. Because `main` is PR-protected, the workflow
+  force-updates `chore/dev-stats`, opens/updates a PR, and squash-merges it
+  (0 approvals required on this repo).
 
 ### Method
 
