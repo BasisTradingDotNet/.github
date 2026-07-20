@@ -11,6 +11,7 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update:
@@ -49,14 +50,42 @@ jobs:
       - name: Render charts
         run: python stats/render_charts.py --data-dir data --out-dir profile/assets/stats
 
-      - name: Commit and push
+      # main is PR-protected (0 approvals required). Push to a bot branch,
+      # open/update a PR, and squash-merge it — never push to main directly.
+      - name: Open PR and merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+          BRANCH="chore/dev-stats"
+          DATE="$(date -u +%F)"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Keep the just-rendered working tree; branch off current HEAD (main).
+          git checkout -B "$BRANCH"
+
           git add data profile/assets/stats
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "chore: update dev stats ($(date -u +%F))"
-            git push
+            if gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
+              gh pr merge "$BRANCH" --squash --delete-branch || true
+            fi
+            exit 0
           fi
+
+          git commit -m "chore: update dev stats (${DATE})"
+          git push -u origin "$BRANCH" --force-with-lease
+
+          if gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
+            echo "Updating existing PR for ${BRANCH}"
+          else
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "chore: update dev stats (${DATE})" \
+              --body "Automated daily refresh of org profile engineering stats (CSVs + SVGs)."
+          fi
+
+          gh pr merge "$BRANCH" --squash --delete-branch
