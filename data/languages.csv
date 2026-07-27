@@ -1,7 +1,7 @@
 language,lines
 TypeScript,139586
 Rust,114025
-Other,50676
+Other,51330
 JSON,46928
 Python,43670
 Markdown,25296
@@ -13,7 +13,7 @@ YAML,3877
 Solidity,827
 Prisma,800
 SQL,723
-Data,246
+Data,248
 HTML,173
 XML,109
 Text,21
